@@ -84,8 +84,8 @@ func inSlice(str string, s []string) bool {
 	return false
 }
 
-// dataSource is an interface that returns object which can be read and closed.
-type dataSource interface {
+// DataSource is an interface that returns object which can be read and closed.
+type DataSource interface {
 	ReadCloser() (io.ReadCloser, error)
 }
 
@@ -116,7 +116,7 @@ func (s *sourceReadCloser) ReadCloser() (io.ReadCloser, error) {
 	return s.reader, nil
 }
 
-func parseDataSource(source interface{}) (dataSource, error) {
+func parseDataSource(source interface{}) (DataSource, error) {
 	switch s := source.(type) {
 	case string:
 		return sourceFile{s}, nil
@@ -173,7 +173,7 @@ type LoadOptions struct {
 }
 
 func LoadSources(opts LoadOptions, source interface{}, others ...interface{}) (_ *File, err error) {
-	sources := make([]dataSource, len(others)+1)
+	sources := make([]DataSource, len(others)+1)
 	sources[0], err = parseDataSource(source)
 	if err != nil {
 		return nil, err
@@ -184,7 +184,7 @@ func LoadSources(opts LoadOptions, source interface{}, others ...interface{}) (_
 			return nil, err
 		}
 	}
-	f := newFile(sources, opts)
+	f := NewFile(sources, opts)
 	if err = f.Reload(); err != nil {
 		return nil, err
 	}

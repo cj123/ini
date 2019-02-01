@@ -28,7 +28,7 @@ import (
 // File represents a combination of a or more INI file(s) in memory.
 type File struct {
 	options     LoadOptions
-	dataSources []dataSource
+	dataSources []DataSource
 
 	// Should make things safe, but sometimes doesn't matter.
 	BlockMode bool
@@ -43,8 +43,8 @@ type File struct {
 	ValueMapper
 }
 
-// newFile initializes File object with given data sources.
-func newFile(dataSources []dataSource, opts LoadOptions) *File {
+// NewFile initializes File object with given data sources.
+func NewFile(dataSources []DataSource, opts LoadOptions) *File {
 	if len(opts.KeyValueDelimiters) == 0 {
 		opts.KeyValueDelimiters = "=:"
 	}
@@ -187,7 +187,7 @@ func (f *File) DeleteSection(name string) {
 	}
 }
 
-func (f *File) reload(s dataSource) error {
+func (f *File) reload(s DataSource) error {
 	r, err := s.ReadCloser()
 	if err != nil {
 		return err

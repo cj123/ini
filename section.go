@@ -15,8 +15,8 @@
 package ini
 
 import (
-	"errors"
 	"fmt"
+	"math/rand"
 	"strings"
 )
 
@@ -62,10 +62,20 @@ func (s *Section) SetBody(body string) {
 	s.rawBody = body
 }
 
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func randomKeyName() string {
+	b := make([]byte, 10)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return "_" + string(b)
+}
+
 // NewKey creates a new key to given section.
 func (s *Section) NewKey(name, val string) (*Key, error) {
 	if len(name) == 0 {
-		return nil, errors.New("error creating new key: empty key name")
+		name = randomKeyName()
 	} else if s.f.options.Insensitive {
 		name = strings.ToLower(name)
 	}

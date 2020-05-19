@@ -55,6 +55,7 @@ type testStruct struct {
 	Omitted      bool     `ini:"omitthis,omitempty"`
 	Shadows      []string `ini:",,allowshadow"`
 	ShadowInts   []int    `ini:"Shadows,,allowshadow"`
+	PointerToInt *int
 }
 
 const _CONF_DATA_STRUCT = `
@@ -263,14 +264,16 @@ names=alice, bruce`))
 func Test_ReflectFromStruct(t *testing.T) {
 	Convey("Reflect from struct", t, func() {
 		type Embeded struct {
-			Dates       []time.Time `delim:"|" comment:"Time data"`
-			Places      []string
-			Years       []int
-			Numbers     []int64
-			Ages        []uint
-			Populations []uint64
-			Coordinates []float64
-			None        []int
+			Dates                  []time.Time `delim:"|" comment:"Time data"`
+			Places                 []string
+			Years                  []int
+			Numbers                []int64
+			Ages                   []uint
+			Populations            []uint64
+			Coordinates            []float64
+			None                   []int
+			IntPointer             *int
+			StringPointerWithValue *string
 		}
 		type Author struct {
 			Name      string `ini:"NAME"`
@@ -285,6 +288,8 @@ func Test_ReflectFromStruct(t *testing.T) {
 
 		t, err := time.Parse(time.RFC3339, "1993-10-07T20:17:05Z")
 		So(err, ShouldBeNil)
+		str := "some string"
+
 		a := &Author{"Unknwon", true, 21, 100, 2.8, t, "",
 			&Embeded{
 				[]time.Time{t, t},
@@ -295,6 +300,8 @@ func Test_ReflectFromStruct(t *testing.T) {
 				[]uint64{12345678, 98765432},
 				[]float64{192.168, 10.11},
 				[]int{},
+				nil,
+				&str,
 			}}
 		cfg := ini.Empty()
 		So(ini.ReflectFrom(cfg, a), ShouldBeNil)
@@ -313,14 +320,16 @@ Date   = 1993-10-07T20:17:05Z
 ; Embeded section
 [infos]
 ; Time data
-Dates       = 1993-10-07T20:17:05Z|1993-10-07T20:17:05Z
-Places      = HangZhou,Boston
-Years       = 1993,1994
-Numbers     = 10010,10086
-Ages        = 18,19
-Populations = 12345678,98765432
-Coordinates = 192.168,10.11
-None        = 
+Dates                  = 1993-10-07T20:17:05Z|1993-10-07T20:17:05Z
+Places                 = HangZhou,Boston
+Years                  = 1993,1994
+Numbers                = 10010,10086
+Ages                   = 18,19
+Populations            = 12345678,98765432
+Coordinates            = 192.168,10.11
+None                   = 
+IntPointer             = 
+StringPointerWithValue = some string
 
 `)
 

@@ -388,6 +388,12 @@ func reflectWithProperType(t reflect.Type, key *Key, field reflect.Value, delim 
 		key.SetValue(fmt.Sprint(field.Interface().(time.Time).Format(time.RFC3339)))
 	case reflect.Slice:
 		return reflectSliceWithProperType(key, field, delim)
+	case reflect.Ptr:
+		if field.IsNil() {
+			key.SetValue("")
+		} else {
+			return reflectWithProperType(t.Elem(), key, field.Elem(), delim)
+		}
 	default:
 		return fmt.Errorf("unsupported type '%s'", t)
 	}
